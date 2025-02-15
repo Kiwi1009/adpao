@@ -11,7 +11,6 @@ Follow these steps to get started:
 - activate the  virtual environment `source venv/bin/activate` (`venv\Scripts\activate` on windows)
 - install the requirements `pip install -r requirements.txt` 
 - create a `.env` files and add an openai key to it `OPENAI_API_KEY="sk-proj ...."`
-- 
 
 
 
