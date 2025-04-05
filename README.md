@@ -7,7 +7,8 @@ This repository provides
 
 
 Follow these steps to get started:
-- create virtual environment `python3 -m venv venv` 
+- Have >python3.12 installed
+- create virtual environment `python3 -m venv venv` #
 - activate the  virtual environment `source venv/bin/activate` (`venv\Scripts\activate` on windows)
 - install the requirements `pip install -r requirements.txt` 
 - create a `.env` files and add an openai key to it `OPENAI_API_KEY="sk-proj ...."`
