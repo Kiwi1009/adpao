@@ -45,3 +45,18 @@ class SkillMap:
 
     def get_function_description_by_name(self, skill_name):
         return str(self.skill_map[skill_name][0]["function"])
+
+    def get_function_schema_by_name(self, skill_name):
+        """
+        Get the function schema in the format expected by OpenAI Assistants API
+        """
+        return self.skill_map[skill_name][0]['function']
+
+    def execute_function(self, function_name, function_args):
+        """
+        Execute a function by name with the given arguments
+        """
+        import json
+        func = self.get_function_callable_by_name(function_name)
+        args = json.loads(function_args)
+        return func(**args)
