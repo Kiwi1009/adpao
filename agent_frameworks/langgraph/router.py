@@ -13,7 +13,6 @@ from langgraph.generate_sql_query import generate_and_run_sql_query
 from langgraph.graph import END, StateGraph
 from langgraph.prebuilt import ToolNode, tools_condition
 from prompt_templates.router_template import SYSTEM_PROMPT
-from langgraph.checkpoint import FileSystemCheckpointer
 
 load_dotenv()
 
@@ -79,11 +78,8 @@ def create_agent_graph(persist_dir: str = None) -> StateGraph:
     # Start with the agent node
     workflow.set_entry_point("agent")
     
-    # Add checkpointing if a persistence directory is provided
-    if persist_dir:
-        checkpointer = FileSystemCheckpointer(persist_dir)
-        return workflow.compile(checkpointer=checkpointer)
-    
+    # Compile without explicit persistence
+    # In LangGraph 0.2.x, we'll handle persistence separately
     return workflow.compile()
 
 
