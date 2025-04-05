@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Dict, List, Any
+from colorama import Fore, init
 
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 
@@ -19,6 +20,9 @@ class AgentRouter:
         """
         Initialize the OpenAI Agent SDK router with assistants for SQL queries and data analysis.
         """
+        # Initialize colorama for cross-platform colored terminal output
+        init()
+        
         self.client = OpenAI()
         self.skill_map = SkillMap()
         
@@ -70,6 +74,8 @@ class AgentRouter:
         Run an assistant with a user message and return the response
         """
         # Add user message to thread
+        print(Fore.MAGENTA, f"\n\n[OpenAI Assistant] Processing message: {user_message}\n")
+        
         self.client.beta.threads.messages.create(
             thread_id=thread_id,
             role="user",
@@ -91,6 +97,7 @@ class AgentRouter:
             if message.role == "assistant":
                 # Return the first assistant message (most recent)
                 content = message.content[0].text.value if message.content else "No response generated."
+                print(Fore.GREEN, f"\n\n[OpenAI Assistant] Response: {content[:100]}...\n")
                 return content
         
         return "No response generated."
@@ -124,6 +131,8 @@ class AgentRouter:
             function_name = tool_call.function.name
             function_args = tool_call.function.arguments
             
+            print(Fore.BLUE, f"\n\n[OpenAI Assistant] Executing function: {function_name}\n")
+            
             # Execute function from skill map
             result = self.skill_map.execute_function(
                 function_name=function_name,
@@ -146,6 +155,8 @@ class AgentRouter:
         """
         Process a user query using the appropriate assistant
         """
+        print(Fore.CYAN, f"\n\n[OpenAI Agent SDK] Received query: {query}\n")
+        
         # Create a new conversation thread
         thread = self._create_thread()
         
@@ -159,6 +170,7 @@ class AgentRouter:
         # Check router response to determine which assistant to use
         if "SQL" in router_response or "database" in router_response.lower():
             # SQL query - use SQL assistant
+            print(Fore.YELLOW, f"\n\n[OpenAI Agent SDK] Routing to SQL assistant\n")
             return self._run_assistant(
                 assistant_id=self.sql_assistant.id,
                 thread_id=thread.id,
@@ -166,6 +178,7 @@ class AgentRouter:
             )
         elif "analysis" in router_response.lower() or "analyze" in router_response.lower():
             # Data analysis - use data analyzer
+            print(Fore.YELLOW, f"\n\n[OpenAI Agent SDK] Routing to Data Analyzer assistant\n")
             return self._run_assistant(
                 assistant_id=self.data_analyzer.id,
                 thread_id=thread.id,
@@ -173,4 +186,5 @@ class AgentRouter:
             )
         else:
             # Default to the router's response if classification is unclear
+            print(Fore.YELLOW, f"\n\n[OpenAI Agent SDK] Using default router response\n")
             return router_response 
