@@ -63,7 +63,7 @@ def run_autogen_agents(query):
         code_execution_config={
             "last_n_messages": 10,
             "work_dir": "groupchat",
-            "use_docker": True,
+            "use_docker": False,
         },
     )
 
