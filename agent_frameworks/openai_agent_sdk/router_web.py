@@ -207,46 +207,14 @@ class RealEstateRouter:
             1. For specific property listings or homes for sale → hand off to property_search_agent
             2. For current mortgage rates and specific financing calculations → hand off to mortgage_agent
             3. For specific neighborhood data or current local information → hand off to neighborhood_agent
-
-            For general real estate questions, conceptual explanations, or follow-up questions about previous responses,
-            use your existing knowledge to respond.
-
-            Maintain a professional, friendly tone and personalize your advice. After answering a user's question,
-            ask ONE specific follow-up question to learn more about their situation.
             
-            Let users know that you are currently operating with limited internet access, so you're providing
-            information based on your general knowledge rather than real-time data.
+            Make sure you keep the information about past querries.
+
         """
-        
-        # Add web search instructions if available
-        tools = []
-        if self.has_web_search:
-            instructions = """
-                You are a comprehensive real estate assistant that helps users find properties,
-                understand mortgage options, and learn about neighborhoods.
-
-                IMPORTANT: Only use web search or hand off to specialized agents when specific current information is needed:
-                1. For specific property listings or homes for sale → hand off to property_search_agent
-                2. For current mortgage rates and specific financing calculations → hand off to mortgage_agent
-                3. For specific neighborhood data or current local information → hand off to neighborhood_agent
-
-                For general real estate questions, conceptual explanations, or follow-up questions about previous responses,
-                use your existing knowledge to respond without web searches.
-
-                Maintain a professional, friendly tone and personalize your advice. After answering a user's question,
-                ask ONE specific follow-up question to learn more about their situation.
-
-                Always be transparent about when you're using current data vs general knowledge.
-                
-                If web search fails, politely explain the limitation and provide the best information
-                you can based on your knowledge.
-            """
-            tools = [self.web_search]
             
         return Agent(
             name="real_estate_agent",
             instructions=instructions,
-            tools=tools,
             handoffs=[self.property_search_agent, self.mortgage_agent, self.neighborhood_agent],
         )
     
@@ -268,7 +236,18 @@ class RealEstateRouter:
         try:
             # Run the agent
             print(Fore.BLUE, f"\n\n[Real Estate SDK] Running real estate agent\n")
+            
+            # Track if handoff is attempted
+            print(Fore.WHITE, f"\n[Real Estate SDK] Checking if handoff is needed...")
+            
             result = await Runner.run(self.real_estate_agent, new_input)
+            
+            # Log which specialized agent was used (if any)
+            if hasattr(result, 'last_agent') and result.last_agent and result.last_agent.name != "real_estate_agent":
+                print(Fore.YELLOW, f"\n[Real Estate SDK] Handoff detected!")
+                print(Fore.YELLOW, f"[Real Estate SDK] ⮕ Query was handled by: {result.last_agent.name}")
+            else:
+                print(Fore.CYAN, "\n[Real Estate SDK] No handoff needed - Query handled by main real estate agent")
             
             # Extract response
             response = result.final_output
