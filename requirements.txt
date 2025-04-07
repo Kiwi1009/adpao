@@ -1,12 +1,15 @@
 
 python-dotenv==1.0.1
 git+https://github.com/openai/swarm.git@main#egg=swarm
-langchain
+langchain==0.3.23
 langchain_openai
-langgraph==0.2.39
-autogen~=0.2
-crewai
-crewai-tools
+langgraph==0.3.25
+autogen==0.7.3
+crewai==0.100.1
+crewai-tools==0.33.0
 colorama
 graphviz
 gradio==5.11.0
+openai==1.70.0
+openai-agents==0.0.8
+tavily-python==0.5.4
