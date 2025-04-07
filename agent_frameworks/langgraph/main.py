@@ -7,7 +7,10 @@ from colorama import Fore, init
 sys.path.insert(1, os.path.join(sys.path[0], ".."))
 import gradio as gr
 from langgraph.router import run_agent
-from langgraph.router_web import run_real_estate_agent
+from langgraph.router_web import RealEstateRouter
+
+# Create a global instance of the router
+real_estate_router = RealEstateRouter()
 
 def gradio_interface(message, history, mode="default"):
     """Enhanced Gradio interface with conversation persistence and mode switching"""
@@ -17,7 +20,7 @@ def gradio_interface(message, history, mode="default"):
     
     # Run the appropriate agent based on mode
     if mode == "real_estate":
-        return run_real_estate_agent(message, thread_id=session_id)
+        return real_estate_router.process_query(message, thread_id=session_id)
     else:
         # Default to SQL/data analysis mode
         return run_agent(message, thread_id=session_id)
